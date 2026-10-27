@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0284c7" />
+  <meta name="description" content="Mini Science Lab - Fun offline experiments, interactive simulations, and exciting quizzes for curious kids!" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="ScienceLab" />
+  <title>Mini Science Lab</title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png" />
+
+  <!-- Google Fonts: Rounded friendly typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- CSS Stylesheets (Cache Busted) -->
+  <link rel="stylesheet" href="./styles/main.css?v=4" />
+  <link rel="stylesheet" href="./styles/components.css?v=4" />
+  <link rel="stylesheet" href="./styles/simulations.css?v=4" />
+
+  <script>
+    // Immediately clear all stale caches and unregister any old service workers
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (let r of registrations) r.unregister();
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        for (let name of names) caches.delete(name);
+      });
+    }
+  </script>
+</head>
+<body class="theme-light text-medium">
+
+  <!-- Mobile Viewport Shell (Edge-to-Edge Pure App View) -->
+  <div id="app-viewport-shell">
+
+    <!-- Offline Toast Notification Banner -->
+    <div class="offline-toast-banner" id="offline-toast">
+      <span>📶 You're Offline — All features work seamlessly!</span>
+    </div>
+
+    <!-- Active Screen View Container -->
+    <main id="main-screen-container" role="main"></main>
+
+    <!-- Bottom Navigation Bar (5 tabs - Dark Navy Modern Floating Dock) -->
+    <nav id="bottom-nav-bar" aria-label="Bottom Navigation">
+      <button class="nav-tab-item active" data-nav="home">
+        <span class="nav-tab-icon">
+          <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 10.5L12 3l9 7.5v9.5a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 20z"></path>
+            <path d="M9 21v-7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7"></path>
+          </svg>
+        </span>
+        <span>Home</span>
+      </button>
+      <button class="nav-tab-item" data-nav="experiments">
+        <span class="nav-tab-icon">
+          <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 2v7.5L5.5 18a2 2 0 0 0 1.7 3h9.6a2 2 0 0 0 1.7-3L14 9.5V2"></path>
+            <path d="M8.5 2h7"></path>
+            <circle cx="10" cy="16" r="1" fill="currentColor"></circle>
+            <circle cx="14" cy="14" r="1" fill="currentColor"></circle>
+          </svg>
+        </span>
+        <span>Experiments</span>
+      </button>
+      <button class="nav-tab-item" data-nav="simulations">
+        <span class="nav-tab-icon">
+          <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </span>
+        <span>Simulations</span>
+      </button>
+      <button class="nav-tab-item" data-nav="quizzes">
+        <span class="nav-tab-icon">
+          <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18h6"></path>
+            <path d="M10 22h4"></path>
+            <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"></path>
+          </svg>
+        </span>
+        <span>Quizzes</span>
+      </button>
+      <button class="nav-tab-item" data-nav="more">
+        <span class="nav-tab-icon">
+          <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="2"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="2"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="2"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="2"></rect>
+          </svg>
+        </span>
+        <span>More</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="./js/sound.js"></script>
+  <script src="./js/mascot.js"></script>
+  <script src="./js/storage.js"></script>
+
+  <!-- Structured Data Stores -->
+  <script src="./js/data/experiments.js"></script>
+  <script src="./js/data/quizzes.js"></script>
+  <script src="./js/data/facts.js"></script>
+  <script src="./js/data/badges.js"></script>
+
+  <!-- Interactive Simulations -->
+  <script src="./js/simulations/circuit.js"></script>
+  <script src="./js/simulations/solar.js"></script>
+  <script src="./js/simulations/water-cycle.js"></script>
+  <script src="./js/simulations/states-matter.js"></script>
+  <script src="./js/simulations/magnets.js"></script>
+  <script src="./js/simulations/human-body.js"></script>
+  <script src="./js/simulations/plant-growth.js"></script>
+
+  <!-- Views -->
+  <script src="./js/views/home.js"></script>
+  <script src="./js/views/experiments-view.js"></script>
+  <script src="./js/views/quiz-view.js"></script>
+  <script src="./js/views/my-lab-view.js"></script>
+  <script src="./js/views/achievements-view.js"></script>
+  <script src="./js/views/library-view.js"></script>
+  <script src="./js/views/settings-view.js"></script>
+  <script src="./js/views/more.js"></script>
+
+  <!-- App Bootstrap -->
+  <script src="./js/app.js"></script>
+</body>
+</html>

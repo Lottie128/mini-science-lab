@@ -1,0 +1,8 @@
+We built Mini Science Lab: a 100% offline educational app for kids featuring real household experiments, interactive circuit & space simulations, and zero logins or ads. 🧪⚡🚀
+
+Key features:
+• 🔬 10 kitchen-tested experiments with interactive materials checklists
+• ⚡ 7 hands-on simulations (circuits, solar orbits, water cycle, plant botany)
+• 🧠 60 STEM quiz questions with instant feedback and answer reviews
+• 🏆 Badges, XP levels & child's personal science observation journal
+• 📶 100% offline by design — zero tracking, child-first safety

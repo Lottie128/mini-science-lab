@@ -1,0 +1,16 @@
+# Build outputs
+build_out/
+android/app/build/
+android/.gradle/
+android/.idea/
+.gradle/
+*.apk
+*.idsig
+
+# Keystore
+release.keystore
+
+# Temporary files & logs
+*.log
+.DS_Store
+Thumbs.db

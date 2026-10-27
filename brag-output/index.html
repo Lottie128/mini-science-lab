@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Science Lab — Launch Video Ad (/brag)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Quicksand:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background: #0f172a;
+      color: #ffffff;
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Outer Cinema Frame */
+    .ad-container {
+      width: 100%;
+      max-width: 1040px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .ad-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ad-header-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ad-header-title h2 {
+      font-size: 20px;
+      font-weight: 900;
+      color: #38bdf8;
+    }
+
+    .ad-badge-tag {
+      background: rgba(56, 189, 248, 0.2);
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Video Screen 16:9 */
+    .video-screen {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #0ea5e9 100%);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Video Canvas (where all graphics, motion and transitions are rendered) */
+    #ad-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Overlay Start Banner (before first click to satisfy audio policy) */
+    .start-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 50;
+      cursor: pointer;
+      transition: opacity 0.3s ease;
+    }
+
+    .start-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .btn-big-play {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      box-shadow: 0 8px 30px rgba(245, 158, 11, 0.6);
+      transition: transform 0.2s ease;
+    }
+
+    .start-overlay:hover .btn-big-play {
+      transform: scale(1.1);
+    }
+
+    .start-overlay h3 {
+      font-size: 24px;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .start-overlay p {
+      font-size: 14px;
+      color: #94a3b8;
+    }
+
+    /* Controls Bar */
+    .controls-bar {
+      background: #1e293b;
+      border-radius: 14px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-ctrl {
+      background: #334155;
+      border: none;
+      color: #ffffff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-ctrl:hover {
+      background: #0284c7;
+    }
+
+    .timeline-track {
+      flex: 1;
+      height: 8px;
+      background: #334155;
+      border-radius: 4px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .timeline-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #38bdf8, #fbbf24);
+      border-radius: 4px;
+    }
+
+    .time-readout {
+      font-size: 13px;
+      font-weight: 700;
+      color: #94a3b8;
+      min-width: 80px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .btn-export {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-export:hover {
+      background: #059669;
+    }
+
+    /* Scene Markers under timeline */
+    .scene-legend {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 700;
+      padding: 0 4px;
+    }
+
+    .scene-legend span.active {
+      color: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ad-container">
+    <div class="ad-header-row">
+      <div class="ad-header-title">
+        <h2>Mini Science Lab — Launch Video Ad</h2>
+        <span class="ad-badge-tag">/brag 20s Ad</span>
+      </div>
+      <div>
+        <a href="../index.html" style="color:#94a3b8; font-size:13px; text-decoration:none; font-weight:700;">⬅️ Open Web App</a>
+      </div>
+    </div>
+
+    <!-- 16:9 Video Viewport -->
+    <div class="video-screen">
+      <canvas id="ad-canvas" width="1920" height="1080"></canvas>
+
+      <div class="start-overlay" id="overlay-play">
+        <div class="btn-big-play">▶</div>
+        <h3>Watch Launch Video (20s)</h3>
+        <p>Turn on audio for full soundtrack, real SFX & circuit sparks!</p>
+      </div>
+    </div>
+
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+      <button class="btn-ctrl" id="btn-play-pause">▶ Play</button>
+      <button class="btn-ctrl" id="btn-voiceover" style="background:#0284c7;">🎙️ Voiceover: ON</button>
+      <button class="btn-ctrl" id="btn-mute">🔊 Music & SFX</button>
+      
+      <div class="timeline-track" id="timeline">
+        <div class="timeline-fill" id="timeline-fill"></div>
+      </div>
+
+      <span class="time-readout" id="time-display">00:00 / 00:20</span>
+      <button class="btn-ctrl btn-export" id="btn-record">⬇️ Download Video</button>
+    </div>
+    <audio id="voiceover-audio" src="ad_voiceover.wav" preload="auto"></audio>
+
+    <div class="scene-legend">
+      <span id="leg-1" class="active">0s: The Hook</span>
+      <span id="leg-2">3.5s: Circuit Lab</span>
+      <span id="leg-3">8.5s: Experiments & Space</span>
+      <span id="leg-4">14.5s: 100% Offline Outro</span>
+    </div>
+  </div>
+
+  <script>
+    // Mini Science Lab — High-Fidelity 60fps Launch Video Ad Renderer
+    const canvas = document.getElementById('ad-canvas');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay-play');
+    const btnPlay = document.getElementById('btn-play-pause');
+    const btnMute = document.getElementById('btn-mute');
+    const btnVoice = document.getElementById('btn-voiceover');
+    const voiceAudio = document.getElementById('voiceover-audio');
+    const timeDisplay = document.getElementById('time-display');
+    const timelineFill = document.getElementById('timeline-fill');
+    const timeline = document.getElementById('timeline');
+    const btnRecord = document.getElementById('btn-record');
+
+    const TOTAL_DURATION = 20.0; // 20 seconds
+    let currentTime = 0.0;
+    let isPlaying = false;
+    let isMuted = false;
+    let isVoiceoverEnabled = true;
+    let lastTimestamp = null;
+    let audioCtx = null;
+    let musicInterval = null;
+
+    // Confetti particles for celebrations
+    const confetti = [];
+    for (let i = 0; i < 70; i++) {
+      confetti.push({
+        x: Math.random() * 1920,
+        y: Math.random() * -500,
+        size: Math.random() * 12 + 6,
+        color: ['#f59e0b', '#38bdf8', '#10b981', '#ec4899', '#a855f7', '#ffffff'][Math.floor(Math.random() * 6)],
+        vy: Math.random() * 6 + 4,
+        vx: (Math.random() - 0.5) * 4,
+        rot: Math.random() * Math.PI * 2,
+        vrot: (Math.random() - 0.5) * 0.1
+      });
+    }
+
+    // Audio Engine: Synchronized Web Audio Synth
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playTone(freq, type = 'sine', duration = 0.15, vol = 0.25) {
+      if (isMuted || !audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    // SFX triggers tracker
+    const sfxTriggers = {
+      circuitSnap: false,
+      circuitGlow: false,
+      bubblePop: false,
+      badgeFanfare: false,
+      outroFanfare: false
+    };
+
+    function resetSfx() {
+      sfxTriggers.circuitSnap = false;
+      sfxTriggers.circuitGlow = false;
+      sfxTriggers.bubblePop = false;
+      sfxTriggers.badgeFanfare = false;
+      sfxTriggers.outroFanfare = false;
+    }
+
+    // Music Rhythm Synthesizer (~124 BPM)
+    function startMusic() {
+      if (musicInterval) clearInterval(musicInterval);
+      const bpm = 124;
+      const beatMs = (60 / bpm) * 1000 / 2; // 8th notes
+      const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25]; // C major pentatonic
+      let step = 0;
+
+      musicInterval = setInterval(() => {
+        if (!isPlaying || isMuted || !audioCtx) return;
+        const note = scale[step % scale.length];
+        // Synth arpeggio
+        playTone(note, 'triangle', 0.12, 0.12);
+        // Kick on every 4 steps
+        if (step % 4 === 0) playTone(65, 'sine', 0.2, 0.3);
+        // Snare / high hat on 2 and 6
+        if (step % 4 === 2) playTone(800, 'square', 0.04, 0.06);
+        step++;
+      }, beatMs);
+    }
+
+    function stopMusic() {
+      if (musicInterval) {
+        clearInterval(musicInterval);
+        musicInterval = null;
+      }
+    }
+
+    // Main Draw Function (Renders the 1920x1080 canvas frame at currentTime)
+    function renderFrame(t) {
+      ctx.clearRect(0, 0, 1920, 1080);
+
+      // Gradient Background
+      const bg = ctx.createLinearGradient(0, 0, 1920, 1080);
+      bg.addColorStop(0, '#0284c7');
+      bg.addColorStop(0.5, '#0369a1');
+      bg.addColorStop(1, '#075985');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, 1920, 1080);
+
+      // Subtle Background Star Sparkles
+      ctx.fillStyle = '#ffffff';
+      for (let i = 0; i < 30; i++) {
+        const sx = ((i * 73 + 120) % 1920);
+        const sy = ((i * 149 + 80) % 1080);
+        const sa = Math.sin(t * 3 + i) * 0.4 + 0.5;
+        ctx.globalAlpha = sa * 0.4;
+        ctx.beginPath();
+        ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1.0;
+
+      // ==========================================
+      // SCENE 1: THE HOOK (0.0s – 3.5s)
+      // ==========================================
+      if (t < 3.5) {
+        const progress = t / 3.5;
+        updateActiveLegend(1);
+
+        // Mascot Waving
+        drawRobotMascot(960, 420, 220, t, 'waving');
+
+        // Main Title
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 84px Nunito';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0,0,0,0.3)';
+        ctx.shadowBlur = 20;
+        ctx.fillText('MINI SCIENCE LAB', 960, 710);
+        ctx.shadowBlur = 0;
+
+        // Subtitle Pill
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = '800 36px Quicksand';
+        ctx.fillText('Turn your kitchen table into a science laboratory! 🧪', 960, 780);
+
+        // Feature Pills
+        drawPill(620, 860, '🔬 10 Hands-on Experiments', '#38bdf8');
+        drawPill(960, 860, '⚡ 7 Live Simulations', '#fbbf24');
+        drawPill(1300, 860, '🧠 60 Quiz Challenges', '#10b981');
+      }
+
+      // ==========================================
+      // SCENE 2: CIRCUIT LAB (3.5s – 8.5s)
+      // ==========================================
+      else if (t >= 3.5 && t < 8.5) {
+        const sc2Time = t - 3.5;
+        updateActiveLegend(2);
+
+        // Breadboard Box
+        ctx.fillStyle = '#1e293b';
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 4;
+        roundRect(ctx, 360, 160, 1200, 720, 28, true, true);
+
+        // Headline
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 48px Nunito';
+        ctx.textAlign = 'center';
+        ctx.fillText('⚡ Interactive Virtual Circuit Lab', 960, 230);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '700 24px Quicksand';
+        ctx.fillText('Connect wires, close the switch, and watch electrons flow in real time!', 960, 270);
+
+        const switchClosed = sc2Time > 0.8;
+
+        // Trigger SFX
+        if (switchClosed && !sfxTriggers.circuitSnap) {
+          sfxTriggers.circuitSnap = true;
+          playTone(600, 'square', 0.08, 0.4);
+          setTimeout(() => playTone(880, 'sine', 0.3, 0.3), 80);
+        }
+
+        // Circuit Loop Wire Path
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 14;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(680, 680);
+        ctx.lineTo(520, 680);
+        ctx.lineTo(520, 420);
+        ctx.lineTo(860, 420);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(1060, 420);
+        ctx.lineTo(1400, 420);
+        ctx.lineTo(1400, 680);
+        ctx.lineTo(1240, 680);
+        ctx.stroke();
+
+        // BATTERY (Bottom Center)
+        ctx.fillStyle = '#334155';
+        roundRect(ctx, 800, 640, 320, 80, 12, true, false);
+        ctx.fillStyle = '#f59e0b';
+        roundRect(ctx, 800, 640, 140, 80, 12, true, false);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 28px Nunito';
+        ctx.fillText('3.0V BATTERY', 960, 690);
+
+        // LIGHT BULB (Top Center)
+        const bulbX = 960;
+        const bulbY = 420;
+
+        if (switchClosed) {
+          // Radiant glowing halo
+          const glow = ctx.createRadialGradient(bulbX, bulbY - 30, 10, bulbX, bulbY - 30, 180);
+          glow.addColorStop(0, 'rgba(250, 204, 21, 0.85)');
+          glow.addColorStop(0.5, 'rgba(250, 204, 21, 0.3)');
+          glow.addColorStop(1, 'rgba(250, 204, 21, 0)');
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(bulbX, bulbY - 30, 180, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#fef08a';
+        } else {
+          ctx.fillStyle = '#94a3b8';
+        }
+
+        // Bulb Glass
+        ctx.beginPath();
+        ctx.arc(bulbX, bulbY - 30, 46, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        // Bulb Base
+        ctx.fillStyle = '#64748b';
+        roundRect(ctx, bulbX - 22, bulbY + 14, 44, 28, 4, true, false);
+
+        // KNIFE SWITCH (Right vertical)
+        const swX = 1400;
+        const swY = 550;
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(swX, swY - 50, 12, 0, Math.PI * 2);
+        ctx.arc(swX, swY + 50, 12, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Moving Switch Blade
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 10;
+        ctx.beginPath();
+        ctx.moveTo(swX, swY + 50);
+        if (switchClosed) {
+          ctx.lineTo(swX, swY - 50);
+        } else {
+          ctx.lineTo(swX - 45, swY - 40);
+        }
+        ctx.stroke();
+
+        // Flowing Electron Particles when closed
+        if (switchClosed) {
+          ctx.fillStyle = '#38bdf8';
+          const speed = (t * 600) % 800;
+          for (let p = 0; p < 16; p++) {
+            const offset = (p * 50 + speed) % 800;
+            let ex = 520, ey = 680 - offset;
+            if (ey < 420) {
+              ex = 520 + (420 - ey);
+              ey = 420;
+            }
+            if (ex < 860) {
+              ctx.beginPath();
+              ctx.arc(ex, ey, 7, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+
+          // Status Badge Pill
+          drawPill(960, 820, '✅ Circuit Closed • 3.0V Power Active!', '#10b981');
+        } else {
+          drawPill(960, 820, '⏸️ Switch Open • Closing Loop...', '#ef4444');
+        }
+      }
+
+      // ==========================================
+      // SCENE 3: EXPERIMENTS & SPACE (8.5s – 14.5s)
+      // ==========================================
+      else if (t >= 8.5 && t < 14.5) {
+        const sc3Time = t - 8.5;
+        updateActiveLegend(3);
+
+        // Section Title
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 52px Nunito';
+        ctx.textAlign = 'center';
+        ctx.fillText('🔬 Real Experiments • 🪐 Cosmic Simulations', 960, 120);
+
+        // Card 1: Kitchen Science (Left)
+        ctx.fillStyle = '#1e293b';
+        roundRect(ctx, 220, 180, 700, 660, 24, true, false);
+        ctx.fillStyle = '#f59e0b';
+        roundRect(ctx, 250, 210, 100, 100, 20, true, false);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '50px Nunito';
+        ctx.fillText('🧲', 300, 280);
+
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 36px Nunito';
+        ctx.fillText('Magnet Magic & Acids/Bases', 370, 255);
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '700 20px Quicksand';
+        ctx.fillText('10 Safe Kitchen Experiments with Safety Checklists', 370, 290);
+
+        // Checklist Items
+        drawCheckItem(270, 360, 'Paper clips & iron metal attraction test');
+        drawCheckItem(270, 420, 'Turmeric indicator natural acid/base testing');
+        drawCheckItem(270, 480, 'Foaming kitchen volcano reaction');
+        drawCheckItem(270, 540, 'Mandatory adult supervision safety lock');
+
+        // Confetti burst on left
+        drawPill(570, 740, '⭐ +50 XP Reward Earned!', '#f59e0b');
+
+        // Card 2: Solar System Orbit (Right)
+        ctx.fillStyle = '#0f172a';
+        roundRect(ctx, 980, 180, 720, 660, 24, true, false);
+
+        // Mini Orbit Space Canvas
+        const cx = 1340;
+        const cy = 480;
+
+        // Sun
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 38, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Orbit Rings
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        ctx.lineWidth = 1.5;
+        [80, 130, 180, 240].forEach((r, idx) => {
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Planet
+          const angle = t * (2.0 / (idx + 1)) + idx;
+          const px = cx + Math.cos(angle) * r;
+          const py = cy + Math.sin(angle) * r;
+          ctx.fillStyle = ['#94a3b8', '#38bdf8', '#ef4444', '#ea580c'][idx];
+          ctx.beginPath();
+          ctx.arc(px, py, [7, 10, 8, 14][idx], 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 32px Nunito';
+        ctx.fillText('Solar System Orbit Explorer', 1340, 760);
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '700 20px Quicksand';
+        ctx.fillText('Tap planets to inspect orbits, speeds & cosmic trivia', 1340, 800);
+      }
+
+      // ==========================================
+      // SCENE 4: 100% OFFLINE OUTRO (14.5s – 20.0s)
+      // ==========================================
+      else {
+        const sc4Time = t - 14.5;
+        updateActiveLegend(4);
+
+        if (!sfxTriggers.outroFanfare) {
+          sfxTriggers.outroFanfare = true;
+          playTone(523.25, 'triangle', 0.2, 0.4);
+          setTimeout(() => playTone(659.25, 'triangle', 0.2, 0.4), 100);
+          setTimeout(() => playTone(783.99, 'triangle', 0.4, 0.5), 200);
+        }
+
+        // Confetti Rain
+        confetti.forEach(c => {
+          ctx.fillStyle = c.color;
+          ctx.save();
+          ctx.translate(c.x, c.y + (sc4Time * 180));
+          ctx.rotate(c.rot + sc4Time * 3);
+          ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size);
+          ctx.restore();
+        });
+
+        // Celebrating Robot Mascot
+        drawRobotMascot(960, 360, 240, t, 'celebrate');
+
+        // Golden Crown
+        ctx.font = '72px Nunito';
+        ctx.textAlign = 'center';
+        ctx.fillText('👑', 960, 220);
+
+        // Final Hero Headline
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 80px Nunito';
+        ctx.shadowColor = 'rgba(0,0,0,0.4)';
+        ctx.shadowBlur = 24;
+        ctx.fillText('Mini Science Lab', 960, 660);
+        ctx.shadowBlur = 0;
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = '800 36px Nunito';
+        ctx.fillText('Explore • Experiment • Learn • Grow!', 960, 730);
+
+        // Offline Guarantee Pill
+        drawPill(960, 820, '📶 100% Offline • Zero Accounts • Safe for Kids', '#10b981');
+      }
+
+      // Timeline Fill update
+      const pct = (t / TOTAL_DURATION) * 100;
+      timelineFill.style.width = pct + '%';
+      timeDisplay.textContent = formatTime(t) + ' / ' + formatTime(TOTAL_DURATION);
+    }
+
+    // Helper: Round Rectangle
+    function roundRect(ctx, x, y, w, h, r, fill, stroke) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
+    }
+
+    // Helper: Pill Badge
+    function drawPill(cx, cy, text, color) {
+      ctx.font = '800 24px Nunito';
+      const m = ctx.measureText(text);
+      const w = m.width + 48;
+      const h = 54;
+      const x = cx - w / 2;
+      const y = cy - h / 2;
+
+      ctx.fillStyle = '#1e293b';
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      roundRect(ctx, x, y, w, h, 27, true, true);
+
+      ctx.fillStyle = color;
+      ctx.textAlign = 'center';
+      ctx.fillText(text, cx, cy + 8);
+    }
+
+    // Helper: Checklist Item
+    function drawCheckItem(x, y, text) {
+      ctx.fillStyle = '#10b981';
+      ctx.font = '24px Nunito';
+      ctx.fillText('✅', x, y);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 24px Quicksand';
+      ctx.fillText(text, x + 40, y);
+    }
+
+    // Helper: Draw Robot Mascot
+    function drawRobotMascot(cx, cy, size, t, mood) {
+      ctx.save();
+      ctx.translate(cx, cy);
+
+      // Bounce
+      const bounce = Math.sin(t * 8) * 8;
+      ctx.translate(0, bounce);
+
+      // Head
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 8;
+      roundRect(ctx, -80, -70, 160, 130, 36, true, true);
+
+      // Ear Antennas
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(-96, -20, 16, 30);
+      ctx.fillRect(80, -20, 16, 30);
+
+      // Antenna Pole & Light
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(-5, -100, 10, 30);
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(0, -105, 14, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Screen Face Mask
+      ctx.fillStyle = '#0f172a';
+      roundRect(ctx, -60, -50, 120, 90, 24, true, false);
+
+      // Glowing Eyes
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      if (mood === 'celebrate') {
+        ctx.arc(-26, -10, 16, Math.PI, Math.PI * 2);
+        ctx.arc(26, -10, 16, Math.PI, Math.PI * 2);
+      } else {
+        ctx.arc(-26, -10, 14, 0, Math.PI * 2);
+        ctx.arc(26, -10, 14, 0, Math.PI * 2);
+      }
+      ctx.fill();
+
+      // Mouth Smile
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.arc(0, 10, 18, 0.2, Math.PI - 0.2);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function updateActiveLegend(sceneNum) {
+      for (let i = 1; i <= 4; i++) {
+        const el = document.getElementById(`leg-${i}`);
+        if (el) el.classList.toggle('active', i === sceneNum);
+      }
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+    }
+
+    // Animation Loop
+    function loop(timestamp) {
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const delta = (timestamp - lastTimestamp) / 1000;
+      lastTimestamp = timestamp;
+
+      if (isPlaying) {
+        currentTime += delta;
+        if (currentTime >= TOTAL_DURATION) {
+          currentTime = 0.0;
+          resetSfx();
+          if (isVoiceoverEnabled && voiceAudio) {
+            voiceAudio.currentTime = 0;
+            voiceAudio.play().catch(()=>{});
+          }
+        }
+      }
+
+      renderFrame(currentTime);
+      requestAnimationFrame(loop);
+    }
+
+    // Interactive Controls
+    overlay.onclick = () => {
+      initAudio();
+      overlay.classList.add('hidden');
+      isPlaying = true;
+      btnPlay.textContent = '⏸️ Pause';
+      startMusic();
+      if (isVoiceoverEnabled && voiceAudio) {
+        voiceAudio.currentTime = currentTime;
+        voiceAudio.play().catch(()=>{});
+      }
+    };
+
+    btnPlay.onclick = () => {
+      initAudio();
+      isPlaying = !isPlaying;
+      btnPlay.textContent = isPlaying ? '⏸️ Pause' : '▶ Play';
+      if (isPlaying) {
+        overlay.classList.add('hidden');
+        startMusic();
+        if (isVoiceoverEnabled && voiceAudio) {
+          voiceAudio.currentTime = currentTime;
+          voiceAudio.play().catch(()=>{});
+        }
+      } else {
+        stopMusic();
+        if (voiceAudio) voiceAudio.pause();
+      }
+    };
+
+    btnVoice.onclick = () => {
+      isVoiceoverEnabled = !isVoiceoverEnabled;
+      btnVoice.textContent = isVoiceoverEnabled ? '🎙️ Voiceover: ON' : '🎙️ Voiceover: OFF';
+      btnVoice.style.background = isVoiceoverEnabled ? '#0284c7' : '#334155';
+      if (!isVoiceoverEnabled && voiceAudio) {
+        voiceAudio.pause();
+      } else if (isVoiceoverEnabled && isPlaying && voiceAudio) {
+        voiceAudio.currentTime = currentTime;
+        voiceAudio.play().catch(()=>{});
+      }
+    };
+
+    btnMute.onclick = () => {
+      isMuted = !isMuted;
+      btnMute.textContent = isMuted ? '🔇 Music Off' : '🔊 Music & SFX';
+    };
+
+    timeline.onclick = (e) => {
+      const rect = timeline.getBoundingClientRect();
+      const clickRatio = (e.clientX - rect.left) / rect.width;
+      currentTime = clickRatio * TOTAL_DURATION;
+      resetSfx();
+      if (voiceAudio) {
+        voiceAudio.currentTime = currentTime;
+      }
+      renderFrame(currentTime);
+    };
+
+    // Video Recording Feature (Download as WebM Video)
+    btnRecord.onclick = () => {
+      initAudio();
+      currentTime = 0.0;
+      resetSfx();
+      isPlaying = true;
+      startMusic();
+
+      const stream = canvas.captureStream(60);
+      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9' });
+      const chunks = [];
+
+      recorder.ondataavailable = (e) => chunks.push(e.data);
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'mini-science-lab-brag-ad.webm';
+        a.click();
+        btnRecord.textContent = '⬇️ Download Video';
+      };
+
+      recorder.start();
+      btnRecord.textContent = '⏺️ Recording (20s)...';
+
+      setTimeout(() => {
+        recorder.stop();
+        isPlaying = false;
+        stopMusic();
+        btnPlay.textContent = '▶ Play';
+      }, TOTAL_DURATION * 1000);
+    };
+
+    // Initial frame render
+    renderFrame(0);
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
