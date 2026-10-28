@@ -14,18 +14,7 @@ class HomeView {
     const unlockedBadges = window.storageManager.state.unlockedBadges.length;
     const levelTitle = window.storageManager.getLevelTitle(stats.level);
 
-    // Pick avatar emoji / icon
-    const avatarIcons = {
-      avatar_explorer_boy: '👦',
-      avatar_scientist_girl: '👧',
-      avatar_curious_boy: '🧒',
-      avatar_braids_girl: '👩',
-      avatar_astro_kid: '👨‍🚀',
-      avatar_robot_mascot: '🤖',
-      avatar_chemist_kid: '🧑‍🔬',
-      avatar_nature_kid: '🤠'
-    };
-    const avatarIcon = avatarIcons[profile.avatarId] || '👦';
+    const avatarIcon = window.AvatarArt.getSVG(profile.avatarId || 'avatar_explorer_boy', 44);
 
     container.innerHTML = `
       <div class="page-content home-view-wrap">

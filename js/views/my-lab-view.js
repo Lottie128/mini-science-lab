@@ -23,17 +23,7 @@ class MyLabView {
     const currentCompleted = completedExps.length + completedSims.length + (completedQuizzes.length > 0 ? Math.min(6, completedQuizzes.length) : 0);
     const overallPercent = Math.min(100, Math.round((currentCompleted / totalPossible) * 100));
 
-    const avatarIcons = {
-      avatar_explorer_boy: '👦',
-      avatar_scientist_girl: '👧',
-      avatar_curious_boy: '🧒',
-      avatar_braids_girl: '👩',
-      avatar_astro_kid: '👨‍🚀',
-      avatar_robot_mascot: '🤖',
-      avatar_chemist_kid: '🧑‍🔬',
-      avatar_nature_kid: '🤠'
-    };
-    const avatarIcon = avatarIcons[profile.avatarId] || '👦';
+    const avatarIcon = window.AvatarArt.getSVG(profile.avatarId || 'avatar_explorer_boy', 56);
 
     container.innerHTML = `
       <div class="page-content">

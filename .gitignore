@@ -14,3 +14,4 @@ release.keystore
 *.log
 .DS_Store
 Thumbs.db
+.local/

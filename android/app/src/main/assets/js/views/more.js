@@ -480,17 +480,7 @@ class MoreView {
   }
 
   getAvatarEmoji(avatarId) {
-    const avatarIcons = {
-      avatar_explorer_boy: '👦',
-      avatar_scientist_girl: '👧',
-      avatar_curious_boy: '🧒',
-      avatar_braids_girl: '👩',
-      avatar_astro_kid: '👨‍🚀',
-      avatar_robot_mascot: '🤖',
-      avatar_chemist_kid: '🧑‍🔬',
-      avatar_nature_kid: '🤠'
-    };
-    return avatarIcons[avatarId] || '👦';
+    return window.AvatarArt.getSVG(avatarId || 'avatar_explorer_boy', 44);
   }
 }
 

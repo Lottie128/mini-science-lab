@@ -465,7 +465,7 @@ class MiniScienceApp {
         <div class="avatars-grid-wrap">
           ${avatars.map(av => `
             <div class="avatar-card-picker ${av.id === currentAvatarId ? 'selected' : ''}" data-avatar-id="${av.id}">
-              <div class="avatar-emoji-circle">${av.icon}</div>
+              <div class="avatar-emoji-circle">${window.AvatarArt.getSVG(av.id, 64)}</div>
               <span class="avatar-picker-name">${av.name}</span>
               <div class="avatar-check-badge">${av.id === currentAvatarId ? '✓' : ''}</div>
             </div>
