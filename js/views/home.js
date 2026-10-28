@@ -27,7 +27,7 @@ class HomeView {
               <span class="greeting-title">${levelTitle}</span>
             </div>
           </div>
-          <div style="display:flex; align-items:center; gap:8px;">
+          <div class="home-top-actions">
             <div class="xp-streak-pill" id="btn-header-xp" style="cursor: pointer;">
               <span class="xp-star">⭐</span>
               <span class="xp-number">${stats.xp} XP</span>

@@ -375,7 +375,7 @@ class MiniScienceApp {
         </div>
 
         <div class="profile-hero-avatar-box">
-          <div class="profile-avatar-large" id="avatar-preview-circle">👦</div>
+          <div class="profile-avatar-large" id="avatar-preview-circle">${window.AvatarArt.getSVG(profile.avatarId || 'avatar_explorer_boy', 80)}</div>
           <span class="avatar-tap-hint">Your Scientist ID</span>
         </div>
 
@@ -440,14 +440,14 @@ class MiniScienceApp {
     let currentAvatarId = profile.avatarId || 'avatar_explorer_boy';
 
     const avatars = [
-      { id: 'avatar_explorer_boy', icon: '👦', name: 'Curious Boy' },
-      { id: 'avatar_scientist_girl', icon: '👧', name: 'Girl Scientist' },
-      { id: 'avatar_curious_boy', icon: '🧒', name: 'Astro Junior' },
-      { id: 'avatar_braids_girl', icon: '👩', name: 'Brave Explorer' },
-      { id: 'avatar_astro_kid', icon: '👨‍🚀', name: 'Cosmic Kid' },
-      { id: 'avatar_robot_mascot', icon: '🤖', name: 'Robot Buddy' },
-      { id: 'avatar_chemist_kid', icon: '🧑‍🔬', name: 'Chemist' },
-      { id: 'avatar_nature_kid', icon: '🤠', name: 'Field Guide' }
+      { id: 'avatar_explorer_boy', name: 'Curious Boy' },
+      { id: 'avatar_scientist_girl', name: 'Girl Scientist' },
+      { id: 'avatar_curious_boy', name: 'Astro Junior' },
+      { id: 'avatar_braids_girl', name: 'Brave Explorer' },
+      { id: 'avatar_astro_kid', name: 'Cosmic Kid' },
+      { id: 'avatar_robot_mascot', name: 'Robot Buddy' },
+      { id: 'avatar_chemist_kid', name: 'Chemist' },
+      { id: 'avatar_nature_kid', name: 'Field Guide' }
     ];
 
     this.mainContainer.innerHTML = `
